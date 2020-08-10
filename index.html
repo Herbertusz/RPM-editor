@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>RPM editor</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="css/normalize.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script type="module">
+        import Editor from './js/editor/editor.js';
+        Editor.init(null, true);
+    </script>
+</head>
+<body>
+
+    <div id="map" tabindex="0">
+        <div id="map-border"></div>
+        <div id="resizer"></div>
+        <div id="rotation-point"></div>
+        <div id="lasso"></div>
+        <canvas id="grid"></canvas>
+    </div>
+
+    <div id="data-panel">
+        <label>ID:                     <input data-value="id" type="text" value="" readonly /></label>
+        <label>típus:                  <input data-value="tile" type="text" value="" readonly /></label>
+        <label>x (vízszintes pozíció): <input data-value="x" type="text" value="" /></label>
+        <label>y (függőleges pozíció): <input data-value="y" type="text" value="" /></label>
+        <label>z (axiális pozíció):    <input data-value="z" type="text" value="" /></label>
+        <label>w (szélesség):          <input data-value="w" type="text" value="" /></label>
+        <label>h (magasság):           <input data-value="h" type="text" value="" /></label>
+        <label>elforgatás szöge:       <input data-value="angle" type="text" value="" /></label>
+        <button id="data-save">Mentés</button>
+    </div>
+
+    <div id="keymap-panel" class="panel">
+        <div class="close">X</div>
+        <table>
+            <tr><th>Művelet</th><th>Azonosító</th><th>Key</th></tr>
+            <tr><td>Kijelölés</td><td>select</td><td>left click</td></tr>
+            <tr><td>Kijelölés törlése</td><td>deselect</td><td>escape keydown</td></tr>
+            <tr><td>Többszörös kijelölés lasso-val</td><td>multiselect</td><td>shift + left mousemove</td></tr>
+            <tr><td>Kijelölt elem hozzáadása / eltávolítása</td><td>toggleselect</td><td>ctrl + left click</td></tr>
+            <tr><td>Ráhelyezése a map-re</td><td>put</td><td>left double click</td></tr>
+            <tr><td>Mozgatás</td><td>drag</td><td>left mousemove</td></tr>
+            <tr><td>Forgáspont lerakása</td><td>rotate_point</td><td>shift + right click</td></tr>
+            <tr><td>Forgatás</td><td>rotate</td><td>right mousemove</td></tr>
+            <tr><td>Mozgatási / átméretezési mód változtatása</td><td>resize_mode</td><td>middle click</td></tr>
+            <tr><td>Átméretezés</td><td>resize</td><td>left mousemove</td></tr>
+            <tr><td>Síkbeli mozgatás</td><td>move_(up|down|left|right)</td><td>ctrl + arrow keydown (repeat)</td></tr>
+            <tr><td>Axiális mozgatás felfelé</td><td>axialmove_up</td><td>shift + arrowup keydown</td></tr>
+            <tr><td>Axiális mozgatás lefelé</td><td>axialmove_down</td><td>shift + arrowdown keydown</td></tr>
+            <tr><td>Törlés</td><td>delete</td><td>delete keydown</td></tr>
+            <tr><td>Másolás</td><td>copy</td><td>ctrl + C keydown</td></tr>
+            <tr><td>Beillesztés</td><td>paste</td><td>ctrl + V keydown</td></tr>
+        </table>
+        A "click" valójában "mousedown" kivéve a kijelölést; a "mousemove" egy "mousedown-&gt;mousemove-&gt;mouseup" sorozat
+    </div>
+
+    <div id="import-panel" class="panel">
+        <div class="close">X</div>
+        <textarea class="import-data"></textarea>
+        <button class="import-start">OK</button>
+    </div>
+
+    <div id="export-panel" class="panel">
+        <div class="close">X</div>
+        <textarea class="export-data"></textarea>
+    </div>
+
+    <div id="export-selected-panel" class="panel">
+        <div class="close">X</div>
+        <textarea class="export-data"></textarea>
+    </div>
+
+    <div id="toolbar">
+        <div class="tabs">
+            <div data-tab="tile" class="tab-selected">Tile</div>
+            <div data-tab="npc">NPC</div>
+        </div>
+        <div id="tile-container" data-tabpanel="tile" class="tab-selected">
+            <input type="text" data-tile-search placeholder="Tile keresése" value="" />
+            <div class="tile-list">
+                <!--
+                <img class="tile" data-action="copy" data-tile="decoration_flowers" src="tiles/decoration_flowers.png" />
+                <img class="tile" data-action="copy" data-tile="decoration_grass" src="tiles/decoration_grass.png" />
+                <img class="tile" data-action="copy" data-tile="field_grass" src="tiles/field_grass.png" />
+                <img class="tile" data-action="copy" data-tile="field_grass_tr1" src="tiles/field_grass_tr1.png" />
+                <img class="tile" data-action="copy" data-tile="field_mud" src="tiles/field_mud.png" />
+                <img class="tile" data-action="copy" data-tile="field_mud_tr1" src="tiles/field_mud_tr1.png" />
+                <img class="tile" data-action="copy" data-tile="object_bush" src="tiles/object_bush.png" />
+                <img class="tile" data-action="copy" data-tile="object_chest" src="tiles/object_chest.png" />
+                <img class="tile" data-action="copy" data-tile="object_tree_down" src="tiles/object_tree_down.png" />
+                <img class="tile" data-action="copy" data-tile="object_tree_up" src="tiles/object_tree_up.png" />
+                <img class="tile" data-action="copy" data-tile="water" src="tiles/water.png" />
+                <img class="tile" data-action="copy" data-tile="water_tr1" src="tiles/water_tr1.png" />
+                -->
+            </div>
+        </div>
+        <div id="npc-container" data-tabpanel="npc">
+            NPC-k lesznek itt
+        </div>
+        <hr />
+        Pálya mérete:
+        <input class="size" type="text" data-map-width value="1000" /> x
+        <input class="size" type="text" data-map-height value="1000" />
+        <button id="map-resize">Átméretezés</button>
+        <span class="vertical-separator"></span>
+        <button id="import-panel-opener">Elemek importálása</button>
+        <button id="export-panel-opener">Elemek exportálása</button>
+        <button id="export-selected-panel-opener">Kijelöltek exportálása</button>
+        <button id="keymap-panel-opener">Keymap</button>
+        <span class="vertical-separator"></span>
+        <label><input id="grid-toggle" type="checkbox" /> Grid</label>
+        <span class="vertical-separator"></span>
+        <a class="link" href="http://rpm.roleplaymadness.com/cms" target="_blank">CMS</a>
+
+        <button id="map-save" class="float-right">Pálya mentése</button>
+        <span class="hide"></span>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+ssh herbertusz@213.181.208.21
+pass: rpmrpm123
+port: 22
+szerver indítás: php /var/www/rpm.roleplaymadness.com/ratchet/bin/server.php
+cms: http://rpm.roleplaymadness.com/cms
+felület: http://rpm.roleplaymadness.com/playme.html

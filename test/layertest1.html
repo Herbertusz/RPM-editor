@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Layer</title>
+    <script type="module">
+        import Canvas from './hd.canvas.js';
+
+        const perfTimes = [];
+
+        const layerTest = function(){
+
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const canvas2 = document.getElementById('canvas2');
+            const ctx2 = canvas2.getContext('2d');
+
+            const Layerset = Canvas.Layerset;
+            const Layer = Canvas.Layer;
+
+            // rétegek definiálása és színek beállítása
+            const layerRectRed = Layer(function(){
+                ctx.fillStyle = 'rgba(255, 0, 0, 1)';
+            });
+            const layerRectGreen = Layer(function(){
+                ctx.fillStyle = 'rgba(0, 255, 0, 1)';
+            });
+            const layerRotatedImg = Layer();
+            const layerCircle = Layer(function(){
+                ctx.fillStyle = 'rgba(0, 0, 255, 1)';
+                ctx.strokeStyle = 'rgba(0, 0, 255, 1)';
+            });
+            const layerPush = Layer(function(){
+                ctx.fillStyle = 'rgba(0, 200, 200, 0.2)';
+            });
+
+            const layerRectPurple = Layer(function(){
+                ctx2.fillStyle = 'rgba(255, 0, 255, 1)';
+            });
+
+            // rétegcsoport létrehozása
+            const graph = Layerset(canvas, layerRectGreen, layerRectRed, layerRotatedImg, layerCircle);
+            const graph2 = Layerset(canvas2, layerRectPurple);
+
+            // rajzolás a rétegekre
+            layerRectRed.draw(function(){
+                ctx.fillRect(20, 10, 200, 100);
+            });
+            layerCircle.draw(function(){
+                ctx.arc(200, 100, 65, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            layerRectPurple.draw(function(){
+                ctx2.fillRect(100, 50, 300, 50);
+            });
+
+            window.setTimeout(function(){
+                // kép betöltése az egyik rétegre
+                const img = new Image();
+                img.onload = function(){
+                    // animációk indítása a betöltés után
+                    let i = 0;
+                    let timer = window.setInterval(function(){
+						let t0 = performance.now();
+
+                        // kér mozgatása jobbra le
+                        layerCircle.clear();
+                        layerCircle.draw(function(){
+                            ctx.lineWidth = 10;
+                            ctx.beginPath();
+                            ctx.arc(200 + (i / 1.7), 100 + (i / 1.7), 60, 0, Math.PI * 2);
+                            ctx.stroke();
+                        });
+
+                        // zöld téglalap mozgatása balra
+                        layerRectGreen.clear();
+                        layerRectGreen.draw(function(){
+                            ctx.fillRect(200 - (1.5 * i), 80, 200, 100);
+                        });
+
+                        // kép forgatása
+                        layerRotatedImg.clear();
+                        layerRotatedImg.draw(function(){
+                            ctx.save();
+                            ctx.translate(150, 100);
+                            ctx.rotate(0.002 * i * i);
+                            ctx.drawImage(img, -(img.width / 2), -(img.height / 2));
+                            ctx.restore();
+                        });
+
+                        if (i == 40){
+                            // kör réteg lejjebb küldése
+                            layerCircle.move('down', 2);
+                            // lila téglalap eltüntetése (canvas2)
+                            layerRectPurple.hide();
+                        }
+                        if (i == 100){
+                            // kör réteg eltüntetése
+                            layerCircle.hide();
+                            // szín megváltoztatása
+                            layerCircle.subCommand = function(){
+                                ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+                            };
+                            // új réteg beszúrása
+                            graph.pushLayer(layerPush, 'top');
+                            layerPush.draw(function(){
+                                ctx.fillRect(150, 70, 200, 200);
+                            });
+                        }
+                        if (i == 150){
+                            // kör réteg megjelenítése
+                            layerCircle.show();
+                        }
+                        if (i > 200){
+                            // zöld téglalap rétegének törlése
+                            layerRectGreen.remove();
+                            window.clearTimeout(timer);
+                            const avgTime = perfTimes.reduce(function(acc, t){
+                                return acc + t;
+                            }) / perfTimes.length;
+                            console.log(avgTime);
+                        }
+
+                        // layerSelf1.clear().draw(function(canvas, ctx){
+                        //     ctx.fillRect(50, 50, 150, i);
+                        // });
+                        // layerSelf2.clear().draw(function(canvas, ctx){
+                        //     ctx.fillRect(50, 50, i, 50);
+                        // });
+
+                        i++;
+
+						let t1 = performance.now();
+						perfTimes.push(t1 - t0);
+                    }, 50);
+                };
+                img.src = 'bee.png';
+            }, 1000);
+        };
+
+        window.onload = function(){
+            document.getElementById('start').onclick = function(){
+                layerTest();
+            };
+        };
+    </script>
+</head>
+<body>
+
+    <input id="start" type="button" value="start" />
+    <br /><br />
+    <canvas id="canvas" width="600" height="400" style="border: 1px solid #000000;"></canvas>
+    <canvas id="canvas2" width="600" height="400" style="border: 1px solid #ff0000;"></canvas>
+
+</body>
+</html>

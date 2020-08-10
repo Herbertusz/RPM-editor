@@ -1,0 +1,20 @@
+{
+  "name": "rpm-editor",
+  "version": "0.1.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.com:hellovin/roleplaymadness.git"
+  },
+  "contributors": [
+    "Horváth Norbert"
+  ],
+  "scripts": {
+    "start": "live-server --port=3000"
+  },
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "live-server": "^1.2.0"
+  }
+}
